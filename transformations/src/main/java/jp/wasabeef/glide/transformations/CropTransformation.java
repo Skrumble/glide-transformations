@@ -22,8 +22,13 @@ import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import java.security.MessageDigest;
 
 public class CropTransformation extends BitmapTransformation {
+
+  private static final int VERSION = 1;
+  private static final String ID = "jp.wasabeef.glide.transformations.CropTransformation." + VERSION;
+  private static final byte[] ID_BYTES = ID.getBytes(CHARSET);
 
   public enum CropType {
     TOP,
@@ -47,13 +52,13 @@ public class CropTransformation extends BitmapTransformation {
   }
 
   @Override protected Bitmap transform(@NonNull Context context, @NonNull BitmapPool pool,
-      @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+                                       @NonNull Bitmap toTransform, int outWidth, int outHeight) {
 
     width = width == 0 ? toTransform.getWidth() : width;
     height = height == 0 ? toTransform.getHeight() : height;
 
     Bitmap.Config config =
-        toTransform.getConfig() != null ? toTransform.getConfig() : Bitmap.Config.ARGB_8888;
+            toTransform.getConfig() != null ? toTransform.getConfig() : Bitmap.Config.ARGB_8888;
     Bitmap bitmap = pool.get(width, height, config);
 
     bitmap.setHasAlpha(true);
@@ -74,9 +79,24 @@ public class CropTransformation extends BitmapTransformation {
     return bitmap;
   }
 
-  @Override public String key() {
+  @Override public String toString() {
     return "CropTransformation(width=" + width + ", height=" + height + ", cropType=" + cropType
-        + ")";
+            + ")";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof CropTransformation;
+  }
+
+  @Override
+  public int hashCode() {
+    return ID.hashCode();
+  }
+
+  @Override
+  public void updateDiskCacheKey(MessageDigest messageDigest) {
+    messageDigest.update(ID_BYTES);
   }
 
   private float getTop(float scaledHeight) {
@@ -91,4 +111,5 @@ public class CropTransformation extends BitmapTransformation {
         return 0;
     }
   }
+
 }

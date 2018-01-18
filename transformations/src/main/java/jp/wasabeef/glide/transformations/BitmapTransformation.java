@@ -31,15 +31,13 @@ import java.security.MessageDigest;
 
 public abstract class BitmapTransformation implements Transformation<Bitmap> {
 
-  public abstract String key();
-
   @Override
   public final Resource<Bitmap> transform(Context context, Resource<Bitmap> resource, int outWidth,
-      int outHeight) {
+                                          int outHeight) {
     if (!Util.isValidDimensions(outWidth, outHeight)) {
       throw new IllegalArgumentException(
-          "Cannot apply transformation on width: " + outWidth + " or height: " + outHeight
-              + " less than or equal to zero and not Target.SIZE_ORIGINAL");
+              "Cannot apply transformation on width: " + outWidth + " or height: " + outHeight
+                      + " less than or equal to zero and not Target.SIZE_ORIGINAL");
     }
     BitmapPool bitmapPool = Glide.get(context).getBitmapPool();
     Bitmap toTransform = resource.get();
@@ -57,9 +55,13 @@ public abstract class BitmapTransformation implements Transformation<Bitmap> {
   }
 
   protected abstract Bitmap transform(@NonNull Context context, @NonNull BitmapPool pool,
-      @NonNull Bitmap toTransform, int outWidth, int outHeight);
+                                      @NonNull Bitmap toTransform, int outWidth, int outHeight);
 
-  @Override public void updateDiskCacheKey(MessageDigest messageDigest) {
-    messageDigest.update(key().getBytes());
-  }
+  @Override public abstract void updateDiskCacheKey(MessageDigest messageDigest);
+
+  @Override
+  public abstract boolean equals(Object o);
+
+  @Override
+  public abstract int hashCode();
 }

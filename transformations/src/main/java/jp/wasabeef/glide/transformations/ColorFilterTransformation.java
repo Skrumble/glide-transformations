@@ -24,8 +24,13 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.support.annotation.NonNull;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import java.security.MessageDigest;
 
 public class ColorFilterTransformation extends BitmapTransformation {
+
+  private static final int VERSION = 1;
+  private static final String ID = "jp.wasabeef.glide.transformations.ColorFilterTransformation." + VERSION;
+  private static final byte[] ID_BYTES = ID.getBytes(CHARSET);
 
   private int color;
 
@@ -34,12 +39,12 @@ public class ColorFilterTransformation extends BitmapTransformation {
   }
 
   @Override protected Bitmap transform(@NonNull Context context, @NonNull BitmapPool pool,
-      @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+                                       @NonNull Bitmap toTransform, int outWidth, int outHeight) {
     int width = toTransform.getWidth();
     int height = toTransform.getHeight();
 
     Bitmap.Config config =
-        toTransform.getConfig() != null ? toTransform.getConfig() : Bitmap.Config.ARGB_8888;
+            toTransform.getConfig() != null ? toTransform.getConfig() : Bitmap.Config.ARGB_8888;
     Bitmap bitmap = pool.get(width, height, config);
 
     Canvas canvas = new Canvas(bitmap);
@@ -51,7 +56,22 @@ public class ColorFilterTransformation extends BitmapTransformation {
     return bitmap;
   }
 
-  @Override public String key() {
+  @Override public String toString() {
     return "ColorFilterTransformation(color=" + color + ")";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof ColorFilterTransformation;
+  }
+
+  @Override
+  public int hashCode() {
+    return ID.hashCode();
+  }
+
+  @Override
+  public void updateDiskCacheKey(MessageDigest messageDigest) {
+    messageDigest.update(ID_BYTES);
   }
 }

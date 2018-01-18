@@ -24,10 +24,15 @@ import android.os.Build;
 import android.renderscript.RSRuntimeException;
 import android.support.annotation.NonNull;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import java.security.MessageDigest;
 import jp.wasabeef.glide.transformations.internal.FastBlur;
 import jp.wasabeef.glide.transformations.internal.RSBlur;
 
 public class BlurTransformation extends BitmapTransformation {
+
+  private static final int VERSION = 1;
+  private static final String ID = "jp.wasabeef.glide.transformations.BlurTransformation." + VERSION;
+  private static final byte[] ID_BYTES = ID.getBytes(CHARSET);
 
   private static int MAX_RADIUS = 25;
   private static int DEFAULT_DOWN_SAMPLING = 1;
@@ -49,7 +54,7 @@ public class BlurTransformation extends BitmapTransformation {
   }
 
   @Override protected Bitmap transform(@NonNull Context context, @NonNull BitmapPool pool,
-      @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+                                       @NonNull Bitmap toTransform, int outWidth, int outHeight) {
 
     int width = toTransform.getWidth();
     int height = toTransform.getHeight();
@@ -77,7 +82,22 @@ public class BlurTransformation extends BitmapTransformation {
     return bitmap;
   }
 
-  @Override public String key() {
+  @Override public String toString() {
     return "BlurTransformation(radius=" + radius + ", sampling=" + sampling + ")";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof BlurTransformation;
+  }
+
+  @Override
+  public int hashCode() {
+    return ID.hashCode();
+  }
+
+  @Override
+  public void updateDiskCacheKey(MessageDigest messageDigest) {
+    messageDigest.update(ID_BYTES);
   }
 }
